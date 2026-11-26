@@ -1,0 +1,8 @@
+# Installed into server/_deps with Isaac Sim's python (see install_deps.bat).
+# aiohttp, numpy and cryptography are provided by Isaac Sim itself.
+aiortc==1.16.0
+pyjwt==2.15.1
+# LeRobot dataset writer (parquet)
+pyarrow==26.0.1
+# H.264 straight from the GPU (NVIDIA, MIT); optional: without it the stream is read back to the CPU
+pynvvideocodec==2.2.4

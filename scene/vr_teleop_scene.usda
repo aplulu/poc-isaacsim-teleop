@@ -1,0 +1,1990 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    endTimeCode = 1000000
+    metersPerUnit = 1
+    startTimeCode = 0
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def "Render" (
+    hide_in_stage_window = true
+    no_delete = true
+)
+{
+    def "OmniverseKit"
+    {
+        def "HydraTextures" (
+            hide_in_stage_window = true
+            no_delete = true
+        )
+        {
+            def RenderProduct "omni_kit_widget_viewport_ViewportTexture_0" (
+                prepend apiSchemas = ["OmniRtxSettingsCommonAdvancedAPI_1", "OmniRtxSettingsRtAdvancedAPI_1", "OmniRtxSettingsPtAdvancedAPI_1", "OmniRtxPostColorGradingAPI_1", "OmniRtxPostChromaticAberrationAPI_1", "OmniRtxPostBloomPhysicalAPI_1", "OmniRtxPostMatteObjectAPI_1", "OmniRtxPostCompositingAPI_1", "OmniRtxPostDofAPI_1", "OmniRtxPostMotionBlurAPI_1", "OmniRtxPostTvNoiseAPI_1", "OmniRtxPostTonemapIrayReinhardAPI_1", "OmniRtxPostDebugSettingsAPI_1", "OmniRtxDebugSettingsAPI_1"]
+                hide_in_stage_window = true
+                no_delete = true
+            )
+            {
+                rel camera = </OmniverseKit_Persp>
+                token omni:rtx:ambientOcclusion:denoiserMode = "none"
+                token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
+                token omni:rtx:background:source:type = "domeLight"
+                bool omni:rtx:debug:view:pixelDebug:enableFixedTextPos = 1
+                token omni:rtx:directLighting:sampledLighting:denoisingTechnique = "None"
+                bool omni:rtx:dlss:frameGeneration = 0
+                float3 omni:rtx:domeLight:rotationAxis = (0, 0, 1)
+                bool omni:rtx:indirectDiffuse:denoiser:enabled = 0
+                bool omni:rtx:material:db:syncLoads = 1
+                token omni:rtx:post:dlss:execMode = "performance"
+                bool omni:rtx:post:registeredCompositing:invertColorCorrection = 1
+                bool omni:rtx:post:registeredCompositing:invertToneMap = 1
+                bool omni:rtx:pt:adaptiveSampling:filterError = 0
+                uint omni:rtx:pt:adaptiveSampling:fixedSppIterations = 2
+                int omni:rtx:pt:clampSpp = 64
+                uint omni:rtx:pt:limits:maxBounces = 3
+                uint omni:rtx:pt:limits:maxGlossyBounces = 3
+                uint omni:rtx:pt:maxSamplesPerLaunch = 2073600
+                uint omni:rtx:pt:mgpu:maxPixelsPerRegionExponent = 12
+                int omni:rtx:pt:samplesPerIteration = 64
+                uint omni:rtx:pt:samplesPerPixel = 64
+                bool omni:rtx:reflections:denoiser:enabled = 0
+                token omni:rtx:rendermode = "RealTimePathTracing"
+                color3f omni:rtx:rt:ambientLight:color = (0.1, 0.1, 0.1)
+                bool omni:rtx:rt:demoire = 0
+                bool omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts = 1
+                int omni:rtx:rt:sss:samples = 1
+                uint omni:rtx:rtpt:maxVolumeBounces = 15
+                float omni:rtx:rtpt:modulatingRoughnessThreshold = 0.08
+                bool omni:rtx:scene:hydra:materialSyncLoads = 1
+                bool omni:rtx:scene:hydra:mdlMaterialWarmup = 1
+                rel orderedVars = </Render/Vars/LdrColor>
+                custom bool overrideClipRange = 0
+                uniform int2 resolution = (1280, 720)
+            }
+        }
+    }
+
+    def RenderSettings "OmniverseGlobalRenderSettings" (
+        prepend apiSchemas = ["OmniRtxSettingsGlobalRtAdvancedAPI_1", "OmniRtxSettingsGlobalPtAdvancedAPI_1"]
+        no_delete = true
+    )
+    {
+        rel products = </Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_0>
+    }
+
+    def "Vars"
+    {
+        def RenderVar "LdrColor" (
+            hide_in_stage_window = true
+            no_delete = true
+        )
+        {
+            uniform string sourceName = "LdrColor"
+            uniform token sourceType = "raw"
+        }
+    }
+}
+
+over "OmniverseKit_Persp"
+{
+    float exposure:fStop = 5
+    float exposure:responsivity = 1.1026709
+    float exposure:time = 0.02
+}
+
+def Xform "World"
+{
+    custom string teleop:assetRoot = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+    custom string teleop:gripperType = "robotiq_2f85"
+    custom double3 teleop:robotBase = (0, 0, 0.8500053286552429)
+    custom double3 teleop:tcpOffset = (0.12342018485069309, 0, 0)
+
+    def PhysicsScene "PhysicsScene" (
+        prepend apiSchemas = ["NewtonSceneAPI", "PhysxSceneAPI"]
+    )
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+        bool physxScene:enableCCD = 1
+    }
+
+    def Xform "Environment" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Grid/default_environment.usd@
+    )
+    {
+    }
+
+    def Scope "Lights"
+    {
+        def DomeLight "Dome"
+        {
+            color3f inputs:color = (1, 1, 1)
+            float inputs:intensity = 800
+        }
+
+        def DistantLight "Key"
+        {
+            float inputs:angle = 1
+            float inputs:intensity = 2500
+            quatd xformOp:orient = (1, 0, 0, 0)
+            float3 xformOp:rotateXYZ = (35, 0, 30)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0, 0, 3)
+            uniform token[] xformOpOrder = ["xformOp:rotateXYZ"]
+        }
+
+        def SphereLight "Fill"
+        {
+            float inputs:intensity = 30000
+            float inputs:radius = 0.15
+            double3 xformOp:translate = (0.6, -1.2, 2)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+    }
+
+    def Scope "Looks"
+    {
+        def Material "PedestalGray"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/PedestalGray/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/PedestalGray/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/PedestalGray/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.18, 0.19, 0.21)
+                float inputs:metallic_constant = 0.3
+                float inputs:reflection_roughness_constant = 0.4
+                token outputs:out
+            }
+        }
+
+        def Material "ToolDark"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/ToolDark/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/ToolDark/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/ToolDark/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.05, 0.05, 0.06)
+                float inputs:metallic_constant = 0.6
+                float inputs:reflection_roughness_constant = 0.35
+                token outputs:out
+            }
+        }
+
+        def Material "ToolPad"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/ToolPad/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/ToolPad/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/ToolPad/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.85, 0.35, 0.05)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.6
+                token outputs:out
+            }
+        }
+
+        def Material "DR_Table"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/DR_Table/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/DR_Table/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/DR_Table/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.6, 0.6, 0.6)
+                float inputs:metallic_constant = 0.5
+                float inputs:reflection_roughness_constant = 0.4
+                token outputs:out
+            }
+        }
+
+        def Material "DR_Floor"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/DR_Floor/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/DR_Floor/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/DR_Floor/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.4, 0.4, 0.4)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.7
+                token outputs:out
+            }
+        }
+
+        def Material "GripperPadPhysics" (
+            prepend apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 1.2
+            float physics:restitution = 0
+            float physics:staticFriction = 1.5
+            uniform token physxMaterial:frictionCombineMode = "max"
+            uniform token physxMaterial:restitutionCombineMode = "min"
+        }
+
+        def Material "Mirror"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/Mirror/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/Mirror/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/Mirror/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.97, 0.97, 0.97)
+                float inputs:metallic_constant = 1
+                float inputs:reflection_roughness_constant = 0
+                token outputs:out
+            }
+        }
+
+        def Material "MirrorFrame"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/MirrorFrame/Shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/MirrorFrame/Shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/MirrorFrame/Shader.outputs:out>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "OmniPBR"
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.08, 0.08, 0.09)
+                float inputs:metallic_constant = 0.2
+                float inputs:reflection_roughness_constant = 0.5
+                token outputs:out
+            }
+        }
+    }
+
+    def Xform "Table" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Warehouse/Equipment/Stainless_Metal_Table_A03/sm_table_metal_stainless_a03_01.usd@
+    )
+    {
+        custom double2 teleop:tableMax = (0.8994382500648501, 0.8999741375446323)
+        custom double2 teleop:tableMin = (0.2005617499351499, -0.8999741375446323)
+        custom double teleop:tableTop = 0.8500053286552429
+        quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865476)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0.5490017409436448, 0.0005650225211776272, 0.7947681546)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Geometry"
+        {
+            over "sm_table_metal_stainless_a03_obj_00" (
+                instanceable = false
+            )
+            {
+                bool physics:kinematicEnabled = 1
+
+                over "VisualMaterials"
+                {
+                    over "opaque__plastic__black_a" (
+                        instanceable = false
+                    )
+                    {
+                    }
+
+                    over "opaque__metal__steel_a" (
+                        instanceable = false
+                    )
+                    {
+                    }
+                }
+
+                over "sm_table_metal_stainless_a03_mesh_00" (
+                    prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                )
+                {
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                }
+            }
+        }
+    }
+
+    def Cube "Table_TopCollider" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        uniform token purpose = "guide"
+        double size = 1
+        float3 xformOp:scale = (0.6988765, 1.7999483, 0.04)
+        double3 xformOp:translate = (0.55, 0, 0.8300053286552429)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Cube "Pedestal" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </World/Looks/PedestalGray>
+        double size = 1
+        float3 xformOp:scale = (0.3, 0.3, 0.8500053)
+        double3 xformOp:translate = (0, 0, 0.42500266432762146)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Xform "Robot" (
+        prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Robots/Fanuc/crx10ia_l/crx10ia_l.usd@
+    )
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0.8500053286552429)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "root_joint"
+        {
+            int physxArticulation:solverPositionIterationCount = 12
+        }
+
+        over "joints"
+        {
+            def PhysicsFixedJoint "gripper_mount"
+            {
+                rel physics:body0 = </World/Robot/J6_link>
+                rel physics:body1 = </World/Gripper/Robotiq_2F_85/base_link>
+                uniform bool physics:excludeFromArticulation = 0
+                point3f physics:localPos0 = (0.16, 0, 0)
+                point3f physics:localPos1 = (0, 0, 0)
+                quatf physics:localRot0 = (0.70710677, 0, 0.70710677, 0)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+        }
+
+        over "J6_link"
+        {
+            over "flange"
+            {
+                over "ee_link"
+                {
+                    def Camera "WristCamera"
+                    {
+                        float2 clippingRange = (0.01, 50)
+                        float focalLength = 12
+                        float horizontalAperture = 20.955
+                        float verticalAperture = 11.787188
+                        matrix4d xformOp:transform = ( (0, -1, 0, 0), (0.3226739277881386, 0, 0.9465101881785398, 0), (-0.9465101881785398, 0, 0.3226739277881386, 0), (0.02, -0, 0.075, 1) )
+                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                    }
+                }
+            }
+        }
+    }
+
+    def Xform "Gripper" (
+        prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Robots/Robotiq/2F-85/Robotiq_2F_85_edit.usd@
+        variants = {
+            string Physics = "Physx_Mimic"
+        }
+    )
+    {
+        quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865476, 0)
+        double3 xformOp:translate = (0.7000000178813934, -0.15000000596046448, 1.8050053119659424)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+        over "Robotiq_2F_85" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+        )
+        {
+            over "Joints"
+            {
+                over "finger_joint"
+                {
+                    float drive:angular:physics:damping = 2
+                    float drive:angular:physics:maxForce = 60
+                    float drive:angular:physics:stiffness = 40
+                }
+            }
+
+            over "left_outer_finger" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/Looks/GripperPadPhysics> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "left_inner_finger" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/Looks/GripperPadPhysics> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "right_outer_finger" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/Looks/GripperPadPhysics> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "right_inner_finger" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/Looks/GripperPadPhysics> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+    }
+
+    def Xform "Mirror"
+    {
+        double3 xformOp:translate = (0.55, 1.0199741375446323, 1.300005328655243)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Cube "Glass" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </World/Looks/Mirror>
+            double size = 1
+            float3 xformOp:scale = (0.9, 0.004, 0.8)
+            double3 xformOp:translate = (0, -0.004, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Frame" (
+            prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+        )
+        {
+            rel material:binding = </World/Looks/MirrorFrame>
+            double size = 1
+            float3 xformOp:scale = (0.95, 0.02, 0.85)
+            double3 xformOp:translate = (0, 0.008, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Stand" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </World/Looks/MirrorFrame>
+            double size = 1
+            float3 xformOp:scale = (0.06, 0.06, 0.90000534)
+            double3 xformOp:translate = (0, 0.03, -0.8500026643276215)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+
+    def Scope "Props"
+    {
+        def Xform "apple_red" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Kitchen/Food/Fruit/Red_Delicious_Apple_A01/sm_food_produce_apple_redDelicous_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "fruit"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.47000000000000003, -0.15)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00000000058168, -2.328350359737108e-10, 2.9999770373136587)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "applered_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__plant__apple_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "applered_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "banana" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Kitchen/Food/Fruit/Banana_A01/sm_food_produce_banana_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "fruit"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.64, 0.02)
+            quatd xformOp:orient = (0.9659258262890683, 0, 0, 0.2588190451025207)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00301071620033, 0.48184709614684496, 2.999983597546816)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "sm_food_produce_banana_a01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "sm_food_produce_banana_a01_mesh_00" (
+                        instanceable = false
+                    )
+                    {
+                        over "VisualMaterials"
+                        {
+                            over "m_opaque__organic__banana_a01" (
+                                instanceable = false
+                            )
+                            {
+                            }
+                        }
+
+                        over "sm_food_produce_banana_a01_mesh_00" (
+                            prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                        )
+                        {
+                            uniform token physics:approximation = "convexDecomposition"
+                        }
+                    }
+                }
+            }
+        }
+
+        def Xform "socket" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Tools/Hand/Socket_7_8in_A01/sm_handTool_socket_7_8in_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "part"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.5700000000000001, 0.02)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.5699999981373549, 0.02, 0.852907399591757)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "socket_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__steelClean_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "socket_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "pulley" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Engine_Components/Idler_Pulley_A01/sm_engineComponent_idler_pulley_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "part"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.4, 0.05)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.3993357257335, 0.049873111024545155, 0.8529370999634249)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "pulley_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__steel_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__black_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "pulley_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "relay" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Consumables/Relay_Fuse_A01/sm_consumable_fuse_relay_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "part"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.4, -0.12)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.3967452110722661, -0.12005541555583477, 0.8530053267940253)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "fuseRelay_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__consumable_fuse_relay_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "fuseRelay_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "injector" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Engine_Components/Fuel_Injector_A01/sm_fuelSystem_fuel_injector_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "part"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.62, -0.22)
+            quatd xformOp:orient = (0.9659258262890683, 0, 0, 0.2588190451025207)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.6159307822539346, -0.2110874077729543, 0.8529622726812959)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "injector_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__aluminiumBrushed_d01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__metal__paintedWorn_gray_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__metal__glossy_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__rubber__glossy_black_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__yellow_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__metal__brushedAniso_clean_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__metal__steelStainless_clean_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "injector_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "golf_ball" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Recreation/Golf_Ball_A01/sm_misc_golfBall_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "small"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.4, 0.05)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40, 1.000008212402463, 2.999994082376361)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "body_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__golfBall_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "body_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "candle" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Decor/Candles/Candle_A01/sm_decor_candle_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "small"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.5700000000000001, 0.02)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00127453915775, 1.4992822017520666, 2.9995890967547894)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "sm_decor_candle_a01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "sm_decor_candle_a01_mesh_00" (
+                        instanceable = false
+                    )
+                    {
+                        over "VisualMaterials"
+                        {
+                            over "m_opaque__wax__candle_a01" (
+                                instanceable = false
+                            )
+                            {
+                            }
+
+                            over "m_opaque__fabric__candle_a01" (
+                                instanceable = false
+                            )
+                            {
+                            }
+                        }
+
+                        over "sm_decor_candle_a01_mesh_00" (
+                            prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                        )
+                        {
+                            uniform token physics:approximation = "convexHull"
+                        }
+                    }
+                }
+            }
+        }
+
+        def Xform "rubiks_cube" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysxRigidBodyAPI"]
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/Rubiks_Cube/rubiks_cube.usd@
+        )
+        {
+            bool physxRigidBody:disableGravity = 1
+            bool physxRigidBody:enableCCD = 1
+            float physxRigidBody:maxDepenetrationVelocity = 0.3
+            int physxRigidBody:solverPositionIterationCount = 16
+            int physxRigidBody:solverVelocityIterationCount = 2
+            custom string teleop:category = "small"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, -0.15)
+            quatd xformOp:orient = (0.9848077530122081, 0, 0, 0.17364817766692991)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.999988170031145, 1.9999674974277042, 3.0360489867020624)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "RubikCube" (
+                prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+            )
+            {
+                uniform token physics:approximation = "convexHull"
+            }
+        }
+
+        def Xform "tape_roll" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Hardware/Tapes/Tape_Refill_A02/sm_misc_tape_refill_a02_01.usd@
+        )
+        {
+            custom string teleop:category = "small"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.64, -0.22)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.99999541603029, 2.501136125996709, 2.999944441020076)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "tapeRefill_02_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__vinil__refill_tape_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__glossy_white_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "tapeRefill_02_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "screwdriver" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Tools/Hand/Screwdriver_Phillips_Ph1_A01/sm_handTool_screwdriver_phillips_ph1_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "tool"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, 0.06)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.027879040688276, 2.9999992717057467, 2.9997900938615203)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "screwdriver_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__screwdriver_phillips_ph1_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__screwdriver_phillips_ph1_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "screwdriver_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "torx_driver" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Tools/Hand/Screwdriver_Torx_T30_A01/sm_handTool_screwdriver_torx_t30_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "tool"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.64, -0.24)
+            quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865476)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00000467710197, 3.444078778848052, 2.999820303171873)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "screwdriver_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__screwdriver_torx_t30_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__screwdriver_torx_t30_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "screwdriver_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "extension_bar" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Tools/Hand/Extension_Bar_A01/sm_handTool_extension_bar_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "tool"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, -0.15)
+            quatd xformOp:orient = (0.9848077530122081, 0, 0, 0.17364817766692991)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00197050991918, 3.9992822687550103, 2.999890546314731)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "extensionBar_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__handTool_socket_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "extensionBar_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "socket_small" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Tools/Hand/Socket_3_4in_A01/sm_handTool_socket_3_4in_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "tool"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.5800000000000001, 0.02)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.99999999254942, 4.5, 2.999918393616099)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "socket_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__steelClean_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "socket_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "mega_fuse" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Consumables/Mega_Orange_Fuse_A01/sm_consumable_fuse_mega_orange_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "electrical"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, 0.03)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.99931539595127, 5.000000149011612, 2.9999999981344416)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "consumableFuse_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__consumable_fuse_mega_orange_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "consumableFuse_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "midi_fuse" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Consumables/Midi_White_Fuse_A01/sm_consumable_fuse_midi_white_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "electrical"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.6, 0)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.9999999795109, 5.500000009313226, 2.999999997206675)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "consumableFuse_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__consumable_fuse_midi_white_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "consumableFuse_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "micro_fuse" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Consumables/Micro_Green_Fuse_A01/sm_consumable_fuse_micro_green_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "electrical"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.46, -0.2)
+            quatd xformOp:orient = (0.9659258262890683, 0, 0, 0.2588190451025207)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.999999869677225, 5.999999775205657, 2.9999736868772424)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "consumableFuse_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__consumable_fuse_micro_green_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "consumableFuse_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "bolt_m20" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/Factory/factory_bolt_m20_loose/factory_bolt_m20_loose.usd@
+        )
+        {
+            custom string teleop:category = "fastener"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, 0.04)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40, 6.5, 3)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "root_joint" (
+                active = false
+            )
+            {
+            }
+
+            over "factory_bolt" (
+                prepend apiSchemas = ["PhysxRigidBodyAPI"]
+            )
+            {
+                bool physxRigidBody:disableGravity = 1
+                bool physxRigidBody:enableCCD = 1
+                float physxRigidBody:maxDepenetrationVelocity = 0.3
+                int physxRigidBody:solverPositionIterationCount = 16
+                int physxRigidBody:solverVelocityIterationCount = 2
+
+                over "visuals" (
+                    instanceable = false
+                )
+                {
+                }
+
+                over "collisions" (
+                    instanceable = false
+                )
+                {
+                    over "mesh_0" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "nut_m20" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/Factory/factory_nut_m20_loose/factory_nut_m20_loose.usd@
+        )
+        {
+            custom string teleop:category = "fastener"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.6, 0.02)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40, 7, 2.980000000447035)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "factory_nut" (
+                prepend apiSchemas = ["PhysxRigidBodyAPI"]
+            )
+            {
+                bool physxRigidBody:disableGravity = 1
+                bool physxRigidBody:enableCCD = 1
+                float physxRigidBody:maxDepenetrationVelocity = 0.3
+                int physxRigidBody:solverPositionIterationCount = 16
+                int physxRigidBody:solverVelocityIterationCount = 2
+
+                over "visuals" (
+                    instanceable = false
+                )
+                {
+                }
+
+                over "collisions" (
+                    instanceable = false
+                )
+                {
+                    over "mesh_0" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "bolt_m16" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/Factory/factory_bolt_m16_loose/factory_bolt_m16_loose.usd@
+        )
+        {
+            custom string teleop:category = "fastener"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, -0.16)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40, 7.5, 3)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "root_joint" (
+                active = false
+            )
+            {
+            }
+
+            over "factory_bolt" (
+                prepend apiSchemas = ["PhysxRigidBodyAPI"]
+            )
+            {
+                bool physxRigidBody:disableGravity = 1
+                bool physxRigidBody:enableCCD = 1
+                float physxRigidBody:maxDepenetrationVelocity = 0.3
+                int physxRigidBody:solverPositionIterationCount = 16
+                int physxRigidBody:solverVelocityIterationCount = 2
+
+                over "visuals" (
+                    instanceable = false
+                )
+                {
+                }
+
+                over "collisions" (
+                    instanceable = false
+                )
+                {
+                    over "mesh_0" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "nut_m16" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/Factory/factory_nut_m16_loose/factory_nut_m16_loose.usd@
+        )
+        {
+            custom string teleop:category = "fastener"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.62, -0.24)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40, 8, 2.983999999240041)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "factory_nut" (
+                prepend apiSchemas = ["PhysxRigidBodyAPI"]
+            )
+            {
+                bool physxRigidBody:disableGravity = 1
+                bool physxRigidBody:enableCCD = 1
+                float physxRigidBody:maxDepenetrationVelocity = 0.3
+                int physxRigidBody:solverPositionIterationCount = 16
+                int physxRigidBody:solverVelocityIterationCount = 2
+
+                over "visuals" (
+                    instanceable = false
+                )
+                {
+                }
+
+                over "collisions" (
+                    instanceable = false
+                )
+                {
+                    over "mesh_0" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "bearing" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Consumables/Bearing_Ball_B01/sm_consumable_bearing_ball_b01_01.usd@
+        )
+        {
+            custom string teleop:category = "smallpart"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, 0.04)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00000000093132, 8.5, 3.0000000000000266)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "body_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__plastic__bearingBall_b01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__metal__bearingBall_b01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "body_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "bearing_small" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Consumables/Bearing_Ball_D01/sm_consumable_bearing_ball_d01_01.usd@
+        )
+        {
+            custom string teleop:category = "smallpart"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.6, 0.02)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40, 9, 2.9999999999972715)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "body_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__bearingBall_d01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__bearingBall_d01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "body_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "valve_lifter" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Machines/Automotive/Engine_Components/Engine_Component_Valve_Lifter_A01/sm_engineComponent_valve_lifter_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "smallpart"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.42000000000000004, -0.16)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-40.00000292586628, 9.49999859809759, 2.999996612299551)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "valveLifter_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__aluminiumBrushed_e01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "valveLifter_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "tape" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Hardware/Tapes/Tape_Refill_A03/sm_misc_tape_refill_a03_01.usd@
+        )
+        {
+            custom string teleop:category = "smallpart"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.62, -0.24)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (-39.99561687652022, 10.000000000465661, 2.999996462837725)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "tapeRefill_03_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 1
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__vinil__refill_tape_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__plastic__glossy_white_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "tapeRefill_03_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "tray" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Warehouse/Containers/Gray_Crate_A14_01/sm_crate_gray_a14_01.usd@
+        )
+        {
+            custom string teleop:category = "item"
+            custom bool teleop:fixed = 1
+            custom double2 teleop:homeXY = (0.5800000000000001, 0.52)
+            quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865476)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.5800000000000001, 0.52, 0.8521434264554997)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "sm_crate_a14_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physics:kinematicEnabled = 1
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 0
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "opaque__plastic__gray_a" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "sm_crate_a14_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+
+        def Xform "coffee_cup" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Kitchen/Dishware/Coffee_Cup_A01/sm_food_beverage_coffeeCup_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "item"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.72, -0.48)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.7204674356672969, -0.4807636064726962, 0.8529917276203632)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "sm_food_beverage_coffeeCup_a01_body_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "sm_food_beverage_coffeeCup_a01_body_mesh_00" (
+                        instanceable = false
+                    )
+                    {
+                        over "VisualMaterials"
+                        {
+                            over "m_opaque__paper__coffeeCup_a01" (
+                                instanceable = false
+                            )
+                            {
+                            }
+
+                            over "m_opaque__cardboard__coffeeCup_a01" (
+                                instanceable = false
+                            )
+                            {
+                            }
+                        }
+
+                        over "sm_food_beverage_coffeeCup_a01_body_mesh_00" (
+                            prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                        )
+                        {
+                            uniform token physics:approximation = "convexDecomposition"
+                        }
+                    }
+                }
+
+                over "sm_food_beverage_coffeeCup_a01_lid_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__plastic__coffeeCup_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "sm_food_beverage_coffeeCup_a01_lid_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexDecomposition"
+                    }
+                }
+            }
+        }
+
+        def Xform "canned_peach" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Kitchen/Food/Canned_Goods/Canned_Peach_A01/sm_food_canned_peach_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "item"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.5, -0.45)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.5, -0.4505483292043209, 0.8530053286552429)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "body_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_opaque__metal__cannedPeach_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+
+                        over "m_opaque__paper__cannedPeach_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "body_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+
+        def Xform "cube" (
+            prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Residential/Furnishing/Kitchen/Kitchenware/Cube_3in_A01/sm_misc_cube_3in_a01_01.usd@
+        )
+        {
+            custom string teleop:category = "item"
+            custom bool teleop:fixed = 0
+            custom double2 teleop:homeXY = (0.76, -0.12)
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0.7582632137825641, -0.12, 0.8530053286552429)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Geometry"
+            {
+                over "body_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_trans__plastic__clean_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "body_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "part_01_obj_00" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI"]
+                    instanceable = false
+                )
+                {
+                    bool physxRigidBody:disableGravity = 0
+                    bool physxRigidBody:enableCCD = 1
+                    float physxRigidBody:maxDepenetrationVelocity = 0.3
+                    int physxRigidBody:solverPositionIterationCount = 16
+                    int physxRigidBody:solverVelocityIterationCount = 2
+
+                    over "VisualMaterials"
+                    {
+                        over "m_trans__plastic__clean_a01" (
+                            instanceable = false
+                        )
+                        {
+                        }
+                    }
+
+                    over "part_01_mesh_00" (
+                        prepend apiSchemas = ["PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+    }
+
+    def Scope "Cameras"
+    {
+        def Camera "Operator"
+        {
+            float2 clippingRange = (0.01, 100)
+            float focalLength = 14
+            float horizontalAperture = 20.955
+            float verticalAperture = 11.787188
+            matrix4d xformOp:transform = ( (0.8192319205190407, -0.5734623443633284, -2.7755575615628926e-17, 0), (0.2935229395071424, 0.41931848501020347, 0.8590787461646544, 0), (-0.4926493117682913, -0.7037847310975591, 0.5118434407982246, 0), (-0.25, -1.0500000000000003, 1.650005328655243, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
+        def Camera "Front"
+        {
+            float2 clippingRange = (0.01, 100)
+            float focalLength = 14
+            float horizontalAperture = 20.955
+            float verticalAperture = 11.787188
+            matrix4d xformOp:transform = ( (0, 1, -0, 0), (-0.34425464915842313, 0, 0.9388763158866087, -0), (0.9388763158866087, -0, 0.34425464915842313, 0), (1.8200000000000003, 0, 1.5000053286552428, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
+        def Camera "Top"
+        {
+            float2 clippingRange = (0.01, 100)
+            float focalLength = 14
+            float horizontalAperture = 20.955
+            float verticalAperture = 11.787188
+            matrix4d xformOp:transform = ( (0, -1, 0, 0), (0.9994449069791542, 0, 0.03331483023263847, 0), (-0.03331483023263847, 0, 0.9994449069791542, 0), (0.47000000000000003, -0, 2.3500053286552434, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
+        def Camera "Dataset"
+        {
+            float2 clippingRange = (0.01, 100)
+            float focalLength = 18
+            float horizontalAperture = 20.955
+            float verticalAperture = 11.787188
+            matrix4d xformOp:transform = ( (0.8749574758237842, -0.4841997681743273, 0, 0), (0.2601704243457549, 0.4701325211861886, 0.8433781849318062, 0), (-0.4083635216272654, -0.7379200478527778, 0.5373204231937702, 0), (-0.04999999999999999, -0.9499999999999998, 1.6000053286552431, 1.0000000000000002) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+    }
+}
+

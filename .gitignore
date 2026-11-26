@@ -1,0 +1,10 @@
+server/_deps/
+server/certs/
+server/logs/
+server/tools/_out/
+__pycache__/
+webapp/node_modules/
+webapp/dist/
+datasets/
+assets/avatars/*.vrm
+assets/avatars/_converted/
